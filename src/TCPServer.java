@@ -102,9 +102,11 @@ class Shared_Clients {
 				if (i == 0) {
 					msg = "de cliente " + clintNmr + " : " + msg;
 				}
+				if(i!=clintNmr){
 				out = new DataOutputStream(clientes.get(i).getOutputStream());
 				out.writeUTF(msg);
 				System.out.println("Enviado de cliente " + clintNmr + " para " + i);
+			}
 
 			} catch (IOException e) {
 				System.out.println("IO:" + e);
