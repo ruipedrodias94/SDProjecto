@@ -12,7 +12,7 @@ public class TCPClient {
 		InputStream input1 = null;
 
 		try {
-			// Ler do ficheiro de configurações!
+			// Ler do ficheiro de configuracoes!
 			input1 = new FileInputStream("clientConf.properties");
 			props.load(input1);
 
@@ -90,6 +90,7 @@ class leSkt extends Thread {
 		try {
 			while (true) {
 				String data = in.readUTF();
+				System.out.println(data);
 
 			}
 		} catch (EOFException e) {

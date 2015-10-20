@@ -92,15 +92,7 @@ class Shared_Clients {
 	}
 
 	synchronized void send_clients(String msg, int clintNmr) {
-		try {
-			if (msg.equals("_ALIVE_")) {
-				out = new DataOutputStream(clientes.get(clintNmr).getOutputStream());
-				out.writeUTF("_IMALIVE_");
-				System.out.println("Aqui");
-			}
-		} catch (IOException e) {
-			System.out.println("IO:" + e);
-		}
+		
 
 		int i;
 		for (i = 0; i < clientes.size(); i++) {
