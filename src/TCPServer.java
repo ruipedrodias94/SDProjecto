@@ -32,6 +32,8 @@ public class TCPServer {
 			ServerSocket listenSocket = new ServerSocket(serverPort);
 			isPrimary = true;
 			System.out.println("Servidor Primário à escuta!");
+			Ping p = new Ping(isPrimary);
+			p.ping();
 			
 			while (true) {
 				Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
@@ -53,6 +55,8 @@ public class TCPServer {
 			ServerSocket listenSocket2 = new ServerSocket(serverPort2);
 			isPrimary = false;
 			System.out.println("Servidor Secundário à escuta!");
+			Ping p2 = new Ping(isPrimary);
+			p2.ping();
 			}
 			catch(IOException e2)
 			{
@@ -142,7 +146,93 @@ class Shared_Clients {
 	}
 }
 
-class Ping extends Thread
-{
+//thread que vai estar continuamente a fazer ping entre servidores
+class Ping extends Thread{
+
+
+	Properties props = new Properties();
+	InputStream inputConfigs = null;
+	boolean isPrimary;
+	String host, host2;
+	int port,port2;
+
+
+	Ping(boolean isPrimary)
+	{
+		this.isPrimary = isPrimary;
+
+		try {
+			this.inputConfigs = new FileInputStream("clientConf.properties");
+			this.props.load(inputConfigs);
+				
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getLocalizedMessage());
+		}
+		this.host = props.getProperty("hostPrimario");
+		this.port = Integer.parseInt(props.getProperty("portPrimario"));
+		this.host2 = props.getProperty("hostSecundario");
+		this.port2 = Integer.parseInt(props.getProperty("portSecundario"));
+	}
+		
+		//Ler do Ficheiro das configs
+		
+		public void ping(){
+		
+		
+		System.out.println("Iniciando ping...");
+		this.start();
+	}
+		public void run()
+		{
+			//Se o servidor for primario
+			if(this.isPrimary == true)
+			{
+				DatagramSocket aSocket = null;
+				String s;
+				try{
+			aSocket = new DatagramSocket(port2);
+			System.out.println("Socket Datagram a escuta no porto "+ host2);
+			while(true){
+				byte[] buffer = new byte[1000]; 			
+				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+				aSocket.receive(request);
+				s=new String(request.getData(), 0, request.getLength());	
+				System.out.println("Server Recebeu: " + s);	
+
+				DatagramPacket reply = new DatagramPacket(request.getData(), 
+						request.getLength(), request.getAddress(), request.getPort());
+				aSocket.send(reply);
+			}}
+			catch (SocketException e){System.out.println("Socket: " + e.getMessage());
+		}catch (IOException e) {System.out.println("IO: " + e.getMessage());
+		}finally {if(aSocket != null) aSocket.close();}
+
+		}
+		else
+		{	
+			DatagramSocket aSocket2 = null;
+			String texto = "HEARTBEAT";
+			try {
+			aSocket2 = new DatagramSocket();
+			while(true)
+			{
+				byte [] m = texto.getBytes();
+				
+				InetAddress aHost = InetAddress.getByName(host2);
+				int serverPort = port2;		                                                
+				DatagramPacket request = new DatagramPacket(m,m.length,aHost,serverPort);
+				aSocket2.send(request);			                        
+				byte[] buffer = new byte[1000];
+				DatagramPacket reply = new DatagramPacket(buffer, buffer.length);	
+				aSocket2.receive(reply);
+				System.out.println("Recebeu: " + new String(reply.getData(), 0, reply.getLength()));
+			}
+		}
+		catch (SocketException e){System.out.println("Socket: " + e.getMessage());
+		}catch (IOException e){System.out.println("IO: " + e.getMessage());
+		}finally {if(aSocket2 != null) aSocket2.close();}
+		}
+		}
 
 }
