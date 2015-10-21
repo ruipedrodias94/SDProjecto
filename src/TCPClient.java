@@ -2,6 +2,10 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
+// Tem que que ler comandos do utilizador e imprimir a resposta
+// Thread a ler pedidos - feito
+// Imprimir resultados - claro que não, né?
+
 public class TCPClient {
 	public static void main(String args[]) {
 
@@ -21,7 +25,7 @@ public class TCPClient {
 		}
 
 		try {
-			// 1o passo
+			// Liga-se ao host através de socket
 			String clientHost = (String) props.getProperty("host");
 			int clientePort = Integer.parseInt(props.getProperty("port"));
 			s = new Socket(clientHost, clientePort);
@@ -29,11 +33,13 @@ public class TCPClient {
 
 			//System.out.println("SOCKET=" + s);
 			System.out.println("Socket Connectado! A escuta!");
+			
 			// 2o passo
 			//Mudar isto porque depois vamos trabalhar com mensagens!
 			DataInputStream in = new DataInputStream(s.getInputStream());
 			DataOutputStream out = new DataOutputStream(s.getOutputStream());
 
+			// ler texto do utilizador para usar para chamar mensagens
 			String texto = "";
 			InputStreamReader input = new InputStreamReader(System.in);
 			BufferedReader reader = new BufferedReader(input);
@@ -71,7 +77,7 @@ public class TCPClient {
 	}
 }
 
-// Thread para estar constantemente a ler do socket
+// Thread para estar constantemente a ler do socket - Para imprimir resultados
 class leSkt extends Thread {
 	Socket serverSocket;
 	DataInputStream in;
