@@ -4,17 +4,19 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
+//Assim que se liga tenta fazer ping	
+
 public class TCPServer {
 	public static void main(String args[]) {
 		int numero = 0;
-		
+		boolean isPrimary = false;
 		Properties props = new Properties();
-		InputStream input1 = null;
+		InputStream inputConfigs = null;
 		
 		//Ler do Ficheiro das configs
 		try {
-			input1 = new FileInputStream("clientConf.properties");
-			props.load(input1);
+			inputConfigs = new FileInputStream("clientConf.properties");
+			props.load(inputConfigs);
 				
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -24,21 +26,43 @@ public class TCPServer {
 		
 		//Ligar Server
 		try {
-			
-			int serverPort = Integer.parseInt(props.getProperty("port"));
+			int serverPort = Integer.parseInt(props.getProperty("portPrimario"));
 			
 			System.out.println("A Escuta no Porto : " + serverPort);
 			ServerSocket listenSocket = new ServerSocket(serverPort);
-			
-			System.out.println("Servidor a escuta!");
+			isPrimary = true;
+			System.out.println("Servidor Primário à escuta!");
 			
 			while (true) {
 				Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
 				new Connection(clientSocket, numero);
 				numero++;
 			}
+		
+		
 		} catch (IOException e) {
-			System.out.println("Listen:" + e.getMessage());
+			System.out.println("Impossivel ligar no porto primario:" + e.getMessage());
+			System.out.println("Tentativa de ligar como porto secundario...");
+		
+		//não conseguiu ligar como primario vai tentar ligar como secundario	
+		try{
+
+			int serverPort2 = Integer.parseInt(props.getProperty("portSecundario"));
+			
+			System.out.println("A Escuta no Porto : " + serverPort2);
+			ServerSocket listenSocket2 = new ServerSocket(serverPort2);
+			isPrimary = false;
+			System.out.println("Servidor Secundário à escuta!");
+			}
+			catch(IOException e2)
+			{
+				System.out.println("Impossível Ligar como secundario:"+e2.getMessage());
+			}
+			catch(NumberFormatException ex)
+			{
+				System.out.println("Erro a ler configuraçoes:"+ex.getMessage());
+			}
+
 		}
 	}
 }
@@ -46,6 +70,7 @@ public class TCPServer {
 // = Thread para tratar de cada canal de comunicacao com um cliente
 class Connection extends Thread {
 	DataInputStream in;
+	DataOutputStream out;
 	Socket clientSocket;
 	int thread_number;
 	Shared_Clients sc = new Shared_Clients();
@@ -56,6 +81,8 @@ class Connection extends Thread {
 		try {
 			clientSocket = aClientSocket;
 			in = new DataInputStream(clientSocket.getInputStream());
+			out = new DataOutputStream(aClientSocket.getOutputStream());
+			out.writeUTF("Bem vinda Sua Puta Fraca");
 			this.start();
 		} catch (IOException e) {
 			System.out.println("Connection:" + e.getMessage());
@@ -113,4 +140,9 @@ class Shared_Clients {
 			}
 		}
 	}
+}
+
+class Ping extends Thread
+{
+
 }

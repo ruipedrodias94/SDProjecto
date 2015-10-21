@@ -26,8 +26,8 @@ public class TCPClient {
 
 		try {
 			// Liga-se ao host através de socket
-			String clientHost = (String) props.getProperty("host");
-			int clientePort = Integer.parseInt(props.getProperty("port"));
+			String clientHost = (String) props.getProperty("hostPrimario");
+			int clientePort = Integer.parseInt(props.getProperty("portPrimario"));
 			s = new Socket(clientHost, clientePort);
 			new leSkt(s);
 
