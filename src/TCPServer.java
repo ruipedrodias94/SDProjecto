@@ -2,6 +2,8 @@
 // TCPServer2.java: Multithreaded server
 import java.net.*;
 import java.io.*;
+import java.rmi.NotBoundException;
+import java.rmi.registry.LocateRegistry;
 import java.util.*;
 
 //Assim que se liga tenta fazer ping
@@ -25,11 +27,6 @@ public class TCPServer {
 			System.out.println(e.getLocalizedMessage());
 		}
 
-
-		//Ligar servidor RMI
-
-
-
 		//Ligar Server
 		try {
 			int serverPort = Integer.parseInt(props.getProperty("portPrimario"));
@@ -40,10 +37,14 @@ public class TCPServer {
 			System.out.println("Servidor Primário à escuta!");
 			Ping p = new Ping(isPrimary);
 			p.ping();
+			
+			RMI_Interface clienteRMI = (RMI_Interface) LocateRegistry.getRegistry(1235).lookup("serverRmi");
+			
+			System.out.println("Cliente RMI ligado!");
 
 			while (true) {
 				Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
-				new Connection(clientSocket, numero);
+				new Connection(clientSocket, numero, clienteRMI);
 				numero++;
 			}
 
@@ -73,6 +74,8 @@ public class TCPServer {
 				System.out.println("Erro a ler configuraçoes:"+ex.getMessage());
 			}
 
+		} catch (NotBoundException e) {
+			e.printStackTrace();
 		}
 	}
 }
@@ -84,10 +87,12 @@ class Connection extends Thread {
 	Socket clientSocket;
 	int thread_number;
 	Shared_Clients sc = new Shared_Clients();
+	RMI_Interface servidor_rmi;
 
-	public Connection(Socket aClientSocket, int numero) {
+	public Connection(Socket aClientSocket, int numero, RMI_Interface servidor_rmi) {
 		thread_number = numero;
 		sc.addClient(aClientSocket);
+		this.servidor_rmi = servidor_rmi;
 		try {
 			clientSocket = aClientSocket;
 			in = new DataInputStream(clientSocket.getInputStream());
@@ -99,6 +104,8 @@ class Connection extends Thread {
 		}
 	}
 
+
+
 	// =============================
 	public void run() {
 		String resposta;
@@ -107,7 +114,8 @@ class Connection extends Thread {
 				// an echo server
 				String data = in.readUTF();
 				System.out.println("T[" + thread_number + "] Recebeu: " + data);
-				resposta = data;
+				resposta = servidor_rmi.sayHello(data);
+
 				sc.send_clients(resposta, thread_number);
 
 			}
@@ -139,7 +147,10 @@ class Shared_Clients {
 				if (i == 0) {
 					msg = "de cliente " + clintNmr + " : " + msg;
 				}
-				if(i!=clintNmr){
+
+				/*Para enviar para o mesmo queliente*/
+
+				if(i==clintNmr){
 					out = new DataOutputStream(clientes.get(i).getOutputStream());
 					out.writeUTF(msg);
 					System.out.println("Enviado de cliente " + clintNmr + " para " + i);
