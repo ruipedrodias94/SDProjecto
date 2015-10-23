@@ -21,10 +21,15 @@ public class TCPServer {
 		try {
 			inputConfigs = new FileInputStream("clientConf.properties");
 			props.load(inputConfigs);
+			System.out.println("Leu do ficheiro de configuracoes com sucesso!");
 
-		} catch (Exception e) {
-			// TODO: handle exception
+
+
+		} catch (FileNotFoundException e) {
+			System.out.println("Nao encontrou o ficheiro de configuracoes!");
 			System.out.println(e.getLocalizedMessage());
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		//Ligar Server
@@ -34,12 +39,15 @@ public class TCPServer {
 			System.out.println("A Escuta no Porto : " + serverPort);
 			ServerSocket listenSocket = new ServerSocket(serverPort);
 			isPrimary = true;
-			System.out.println("Servidor Primário à escuta!");
+			System.out.println("Servidor Primario a� escuta!");
 			Ping p = new Ping(isPrimary);
 			p.ping();
-			
-			RMI_Interface clienteRMI = (RMI_Interface) LocateRegistry.getRegistry(1235).lookup("serverRmi");
-			
+
+			int rmiregistry = Integer.parseInt(props.getProperty("rmiRegistry"));
+			String rmirebind = (String) props.getProperty("rmiRebind");
+
+			RMI_Interface clienteRMI = (RMI_Interface) LocateRegistry.getRegistry(rmiregistry).lookup(rmirebind);
+
 			System.out.println("Cliente RMI ligado!");
 
 			while (true) {
