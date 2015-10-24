@@ -23,7 +23,6 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
     private static final long serialVersionUID = 1L;
 
     Connection connection = null;
-
     Statement statement = null;
     ResultSet resultSet = null;
 
@@ -66,6 +65,15 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
             return resultSet.getInt(1);
         }
         return FALSE;
+    }
+
+    public synchronized ArrayList<String> getUserNames() throws SQLException, RemoteException{
+        ArrayList<String> users = new ArrayList<>();
+        resultSet = connection.createStatement().executeQuery("SELECT NOME FROM EMP");
+        while (resultSet.next()){
+            users.add(resultSet.getString("NOME"));
+        }
+        return users;
     }
 
 }

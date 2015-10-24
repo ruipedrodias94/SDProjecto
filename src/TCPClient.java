@@ -11,24 +11,11 @@ public class TCPClient {
 
 		Socket s = null;
 
-		/* Java properties */
-		Properties props = new Properties();
-		InputStream input1 = null;
+		Informations info = new Informations();
 
 		try {
-			// Ler do ficheiro de configuracoes!
-			input1 = new FileInputStream("clientConf.properties");
-			props.load(input1);
 
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
-		try {
-			// Liga-se ao host através de socket
-			String clientHost = (String) props.getProperty("hostPrimario");
-			int clientePort = Integer.parseInt(props.getProperty("portPrimario"));
-			s = new Socket(clientHost, clientePort);
+			s = new Socket(info.getHostPrimario(), info.getServerPort());
 			new leSkt(s);
 
 			System.out.println("Socket Connectado! A escuta!");

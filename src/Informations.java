@@ -18,14 +18,16 @@ public class Informations {
     //Server
     private int serverPort;
     private int serverPort2;
+    private String hostPrimario;
+    private String hostSecundario;
 
     //DataBase
     private String url;
     private String user;
     private String pass;
     private String SID;
-    private String host;
-    private String port;
+    private String hostDataBase;
+    private String portDataBase;
 
     public Informations(){
 
@@ -46,13 +48,15 @@ public class Informations {
         this.setRmiRebind(props.getProperty("rmiRebind"));
         this.setRmiRegistry(Integer.parseInt(props.getProperty("rmiRegistry")));
         this.setServerPort(Integer.parseInt(props.getProperty("portPrimario")));
-        this.setServerPort(Integer.parseInt(props.getProperty("portSecundario")));
+        this.setServerPort2(Integer.parseInt(props.getProperty("portSecundario")));
+        this.setHostPrimario(props.getProperty("hostPrimario"));
+        this.setHostPrimario(props.getProperty("hostSecundario"));
         this.setUser( props.getProperty("user"));
         this.setPass( props.getProperty("pass"));
-        this.setHost( props.getProperty("host"));
-        this.setPort( props.getProperty("port"));
+        this.setHostDataBase(props.getProperty("host"));
+        this.setPortDataBase(props.getProperty("port"));
         this.setSID( props.getProperty("SID"));
-        this.setUrl("jdbc:oracle:thin:@"+this.getHost()+":"+this.getPort()+":"+this.getSID());
+        this.setUrl("jdbc:oracle:thin:@"+this.getHostDataBase()+":"+this.getPortDataBase()+":"+this.getSID());
     }
 
     public int getRmiRegistry() {
@@ -119,19 +123,35 @@ public class Informations {
         this.SID = SID;
     }
 
-    public String getHost() {
-        return host;
+    public String getHostDataBase() {
+        return hostDataBase;
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    public void setHostDataBase(String host) {
+        this.hostDataBase = host;
     }
 
-    public String getPort() {
-        return port;
+    public String getPortDataBase() {
+        return portDataBase;
     }
 
-    public void setPort(String port) {
-        this.port = port;
+    public void setPortDataBase(String port) {
+        this.portDataBase = port;
+    }
+
+    public String getHostPrimario() {
+        return hostPrimario;
+    }
+
+    public void setHostPrimario(String hostPrimario) {
+        this.hostPrimario = hostPrimario;
+    }
+
+    public String getHostSecundario() {
+        return hostSecundario;
+    }
+
+    public void setHostSecundario(String hostSecundario) {
+        this.hostSecundario = hostSecundario;
     }
 }

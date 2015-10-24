@@ -12,33 +12,19 @@ import java.util.*;
 //Vai servir também de Cliente RMI
 
 public class TCPServer {
-	public static void main(String args[]) {
+	public static void main(String args[]) throws SQLException {
 		int numero = 0;
 		boolean isPrimary = false;
 		Properties props = new Properties();
 		InputStream inputConfigs = null;
 
-		//Ler do Ficheiro das configs
-		try {
-			inputConfigs = new FileInputStream("clientConf.properties");
-			props.load(inputConfigs);
-			System.out.println("Leu do ficheiro de configuracoes com sucesso!");
-
-
-
-		} catch (FileNotFoundException e) {
-			System.out.println("Nao encontrou o ficheiro de configuracoes!");
-			System.out.println(e.getLocalizedMessage());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Informations info = new Informations();
 
 		//Ligar Server
 		try {
-			int serverPort = Integer.parseInt(props.getProperty("portPrimario"));
 
-			System.out.println("A Escuta no Porto : " + serverPort);
-			ServerSocket listenSocket = new ServerSocket(serverPort);
+			System.out.println("A Escuta no Porto : " + info.getServerPort());
+			ServerSocket listenSocket = new ServerSocket(info.getServerPort());
 			isPrimary = true;
 			System.out.println("Servidor Primario a  escuta!");
 			Ping p = new Ping(isPrimary);
@@ -46,12 +32,13 @@ public class TCPServer {
 
 
 			//Tentativa de ligar o servidor RMI!
-			int rmiregistry = Integer.parseInt(props.getProperty("rmiRegistry"));
-			String rmirebind = (String) props.getProperty("rmiRebind");
 
-			RMI_DataBase_Interface clienteRMI = (RMI_DataBase_Interface) LocateRegistry.getRegistry(rmiregistry).lookup(rmirebind);
+
+			RMI_DataBase_Interface clienteRMI = (RMI_DataBase_Interface) LocateRegistry.getRegistry(info.getRmiRegistry()).lookup(info.getRmiRebind());
 
 			System.out.println("Cliente RMI ligado!");
+
+
 
 			while (true) {
 				Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
@@ -70,7 +57,7 @@ public class TCPServer {
 
 				int serverPort2 = Integer.parseInt(props.getProperty("portSecundario"));
 
-				System.out.println("A Escuta no Porto : " + serverPort2);
+				System.out.println("A Escuta no Porto : " + info.getServerPort2());
 				ServerSocket listenSocket2 = new ServerSocket(serverPort2);
 				isPrimary = false;
 				System.out.println("Servidor SecundÃ¡rio Ã  escuta!");
@@ -100,6 +87,7 @@ class Connection extends Thread {
 	int thread_number;
 	Shared_Clients sc = new Shared_Clients();
 	RMI_DataBase_Interface servidor_rmi;
+	ArrayList<String> useres = new ArrayList<>();
 
 	public Connection(Socket aClientSocket, int numero, RMI_DataBase_Interface servidor_rmi) {
 		thread_number = numero;
@@ -127,11 +115,17 @@ class Connection extends Thread {
 				String data = in.readUTF();
 				System.out.println("T[" + thread_number + "] Recebeu: " + data);
 
-				int num = servidor_rmi.getUsers();
+				/*int num = servidor_rmi.getUsers();
 
-				resposta = String.valueOf(num);
+				resposta = String.valueOf(num);*/
+				useres = servidor_rmi.getUserNames();
 
-				sc.send_clients(resposta, thread_number);
+				for (int i = 0; i < useres.size() ; i++) {
+					resposta = useres.get(i);
+					sc.send_clients(resposta, thread_number);
+				}
+
+
 
 			}
 		} catch (EOFException e) {
