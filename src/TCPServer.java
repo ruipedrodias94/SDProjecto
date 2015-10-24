@@ -4,6 +4,7 @@ import java.net.*;
 import java.io.*;
 import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
+import java.sql.SQLException;
 import java.util.*;
 
 //Assim que se liga tenta fazer ping
@@ -43,16 +44,19 @@ public class TCPServer {
 			Ping p = new Ping(isPrimary);
 			p.ping();
 
+
+			//Tentativa de ligar o servidor RMI!
 			int rmiregistry = Integer.parseInt(props.getProperty("rmiRegistry"));
 			String rmirebind = (String) props.getProperty("rmiRebind");
 
-			RMI_Interface clienteRMI = (RMI_Interface) LocateRegistry.getRegistry(rmiregistry).lookup(rmirebind);
+			RMI_DataBase_Interface clienteRMI = (RMI_DataBase_Interface) LocateRegistry.getRegistry(rmiregistry).lookup(rmirebind);
 
 			System.out.println("Cliente RMI ligado!");
 
 			while (true) {
 				Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
 				new Connection(clientSocket, numero, clienteRMI);
+
 				numero++;
 			}
 
@@ -95,9 +99,9 @@ class Connection extends Thread {
 	Socket clientSocket;
 	int thread_number;
 	Shared_Clients sc = new Shared_Clients();
-	RMI_Interface servidor_rmi;
+	RMI_DataBase_Interface servidor_rmi;
 
-	public Connection(Socket aClientSocket, int numero, RMI_Interface servidor_rmi) {
+	public Connection(Socket aClientSocket, int numero, RMI_DataBase_Interface servidor_rmi) {
 		thread_number = numero;
 		sc.addClient(aClientSocket);
 		this.servidor_rmi = servidor_rmi;
@@ -122,7 +126,10 @@ class Connection extends Thread {
 				// an echo server
 				String data = in.readUTF();
 				System.out.println("T[" + thread_number + "] Recebeu: " + data);
-				resposta = servidor_rmi.sayHello(data);
+
+				int num = servidor_rmi.getUsers();
+
+				resposta = String.valueOf(num);
 
 				sc.send_clients(resposta, thread_number);
 
@@ -131,6 +138,8 @@ class Connection extends Thread {
 			System.out.println("EOF:" + e);
 		} catch (IOException e) {
 			System.out.println("IO:" + e);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 }

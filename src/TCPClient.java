@@ -31,7 +31,6 @@ public class TCPClient {
 			s = new Socket(clientHost, clientePort);
 			new leSkt(s);
 
-			//System.out.println("SOCKET=" + s);
 			System.out.println("Socket Connectado! A escuta!");
 			
 			// 2o passo
