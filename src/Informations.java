@@ -14,6 +14,7 @@ public class Informations {
     //RMI
     private int rmiRegistry;
     private String rmiRebind;
+    private String rmiIP;
 
     //Server
     private int serverPort;
@@ -56,6 +57,7 @@ public class Informations {
         this.setHostDataBase(props.getProperty("host"));
         this.setPortDataBase(props.getProperty("port"));
         this.setSID( props.getProperty("SID"));
+        this.setRmiIP(props.getProperty("rmiIp"));
         this.setUrl("jdbc:oracle:thin:@"+this.getHostDataBase()+":"+this.getPortDataBase()+":"+this.getSID());
     }
 
@@ -153,5 +155,13 @@ public class Informations {
 
     public void setHostSecundario(String hostSecundario) {
         this.hostSecundario = hostSecundario;
+    }
+
+    public String getRmiIP() {
+        return rmiIP;
+    }
+
+    public void setRmiIP(String rmiIP) {
+        this.rmiIP = rmiIP;
     }
 }

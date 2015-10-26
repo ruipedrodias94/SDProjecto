@@ -3,6 +3,7 @@
 import java.net.*;
 import java.io.*;
 import java.rmi.NotBoundException;
+import java.rmi.RMISecurityManager;
 import java.rmi.registry.LocateRegistry;
 import java.sql.SQLException;
 import java.util.*;
@@ -33,19 +34,36 @@ public class TCPServer {
 
 			//Tentativa de ligar o servidor RMI!
 
+			RMI_DataBase_Interface clienteRMI=null;
 
-			RMI_DataBase_Interface clienteRMI = (RMI_DataBase_Interface) LocateRegistry.getRegistry(info.getRmiRegistry()).lookup(info.getRmiRebind());
+			try
+			{
+				System.getProperties().put("java.security.policy", "security.policy");
+				System.setSecurityManager(new RMISecurityManager());
+				clienteRMI = (RMI_DataBase_Interface) LocateRegistry.getRegistry(info.getRmiIP(),info.getRmiRegistry()).lookup(info.getRmiRebind());
+				System.out.println("Cliente RMI ligado!");
+
+
+
+			} catch (Exception e){
+
+				System.out.println("Error establishing connection with RMI.\nPlease try again later");
+				System.exit(1);
+
+
+			}
+
 
 			System.out.println("Cliente RMI ligado!");
-
-
-
 			while (true) {
 				Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
 				new Connection(clientSocket, numero, clienteRMI);
 
 				numero++;
 			}
+
+
+
 
 
 		} catch (IOException e) {
@@ -73,8 +91,6 @@ public class TCPServer {
 				System.out.println("Erro a ler configuraçoes:"+ex.getMessage());
 			}
 
-		} catch (NotBoundException e) {
-			e.printStackTrace();
 		}
 	}
 }
