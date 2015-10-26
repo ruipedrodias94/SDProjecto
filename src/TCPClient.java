@@ -40,10 +40,8 @@ public class TCPClient {
 				} catch (Exception e) {
 					System.out.println(e.getLocalizedMessage());
 				}
-
 				// WRITE INTO THE SOCKET
 				out.writeUTF(texto);
-
 			}
 
 		} catch (UnknownHostException e) {

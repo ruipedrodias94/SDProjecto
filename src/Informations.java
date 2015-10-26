@@ -51,7 +51,7 @@ public class Informations {
         this.setServerPort(Integer.parseInt(props.getProperty("portPrimario")));
         this.setServerPort2(Integer.parseInt(props.getProperty("portSecundario")));
         this.setHostPrimario(props.getProperty("hostPrimario"));
-        this.setHostPrimario(props.getProperty("hostSecundario"));
+        this.setHostSecundario((props.getProperty("hostSecundario")));
         this.setUser( props.getProperty("user"));
         this.setPass( props.getProperty("pass"));
         this.setHostDataBase(props.getProperty("host"));
