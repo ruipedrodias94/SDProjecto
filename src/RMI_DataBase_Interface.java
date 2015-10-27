@@ -11,7 +11,6 @@ public interface RMI_DataBase_Interface extends Remote {
     Esta classe vai servir para meter os métodos do servidor RMI, para depois um gajo vir aqui buscar.
      */
 
-    int getUsers() throws SQLException, RemoteException;
-    ArrayList<String> getUserNames() throws SQLException, RemoteException;
+    public ArrayList<String> showCities() throws SQLException, RemoteException;
 
 }

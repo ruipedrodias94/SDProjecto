@@ -16,10 +16,9 @@ public class RMI_DataBase {
 
             RMI_DataBase_Interface servidor_rmi = new DataBase();
             LocateRegistry.createRegistry(info.getRmiRegistry()).rebind(info.getRmiRebind(), servidor_rmi);
-            System.out.println("Servidor RMI ligado!");
+            System.out.println("RMI on e a espera de Receber! ");
 
         }catch (RemoteException e){
-            System.out.println("PUTA VIDA MERDA CAGALHOES");
             System.out.println(e.getLocalizedMessage());
         }
 

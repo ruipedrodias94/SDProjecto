@@ -38,11 +38,12 @@ public class TCPServer {
 
 			try
 			{
+
 				System.getProperties().put("java.security.policy", "security.policy");
 				System.setSecurityManager(new RMISecurityManager());
 				clienteRMI = (RMI_DataBase_Interface) LocateRegistry.getRegistry(info.getRmiIP(),info.getRmiRegistry()).lookup(info.getRmiRebind());
 				System.out.println("Cliente RMI ligado!");
-
+				System.out.println(clienteRMI);
 
 
 			} catch (Exception e){
@@ -50,21 +51,14 @@ public class TCPServer {
 				System.out.println("Error establishing connection with RMI.\nPlease try again later");
 				System.exit(1);
 
-
 			}
 
-
-			System.out.println("Cliente RMI ligado!");
 			while (true) {
 				Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
 				new Connection(clientSocket, numero, clienteRMI);
 
 				numero++;
 			}
-
-
-
-
 
 		} catch (IOException e) {
 			System.out.println("Impossivel ligar no porto primario:" + e.getMessage());
@@ -120,8 +114,6 @@ class Connection extends Thread {
 		}
 	}
 
-
-
 	// =============================
 	public void run() {
 		String resposta;
@@ -134,7 +126,7 @@ class Connection extends Thread {
 				/*int num = servidor_rmi.getUsers();
 
 				resposta = String.valueOf(num);*/
-				useres = servidor_rmi.getUserNames();
+				useres = servidor_rmi.showCities();
 
 				for (int i = 0; i < useres.size() ; i++) {
 					resposta = useres.get(i);
@@ -219,14 +211,13 @@ class Ping extends Thread{
 		this.port2 = Integer.parseInt(props.getProperty("portSecundario"));
 	}
 
-	//Ler do Ficheiro das configs
-
 	public void ping(){
-
 
 		System.out.println("Iniciando ping...");
 		this.start();
 	}
+
+
 	public void run()
 	{
 		//Se o servidor for primario
@@ -236,7 +227,7 @@ class Ping extends Thread{
 			String s;
 			try{
 				aSocket = new DatagramSocket(port2);
-				System.out.println("Socket Datagram a escuta no porto "+ host2);
+				System.out.println("Socket Datagram a escuta no porto "+ port2);
 				while(true){
 					byte[] buffer = new byte[1000];
 					DatagramPacket request = new DatagramPacket(buffer, buffer.length);

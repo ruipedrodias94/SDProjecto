@@ -43,9 +43,11 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
         }
 
         System.out.println("[DATABASE] Oracle JDBC Driver Instalada!");
+        System.out.println(info.getUrl());
 
         try{
             connection = DriverManager.getConnection(info.getUrl(),info.getUser(), info.getPass());
+            System.out.println(info.getUrl());
 
         }catch (SQLException e){
             System.out.println("Falhou a fazer a connexao a base de dados!");
@@ -59,21 +61,22 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
         }
     }
 
-    public synchronized int getUsers() throws SQLException, RemoteException {
-        resultSet = connection.createStatement().executeQuery("SELECT COUNT (*) from EMP");
-        while (resultSet.next()) {
-            return resultSet.getInt(1);
+    public synchronized ArrayList<String> showCities() throws RemoteException, SQLException{
+
+        ArrayList<String> cona = new ArrayList<>();
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(" SELECT * FROM world.city;");
+            while (resultSet.next()){
+                cona.add(resultSet.getString(2));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return FALSE;
+
+        return cona;
+
     }
 
-    public synchronized ArrayList<String> getUserNames() throws SQLException, RemoteException{
-        ArrayList<String> users = new ArrayList<>();
-        resultSet = connection.createStatement().executeQuery("SELECT NOME FROM EMP");
-        while (resultSet.next()){
-            users.add(resultSet.getString("NOME"));
-        }
-        return users;
-    }
 
 }
