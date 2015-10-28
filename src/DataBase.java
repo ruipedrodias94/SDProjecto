@@ -61,6 +61,10 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
         }
     }
 
+    /*
+    Metodo da borra só para testar se esta merda vai realmente buscar os dados
+     */
+
     public synchronized ArrayList<String> showCities() throws RemoteException, SQLException{
 
         ArrayList<String> cona = new ArrayList<>();
@@ -75,8 +79,102 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
         }
 
         return cona;
-
     }
+
+    /*
+    Listar Projectos actuais
+    - Ainda não sei o que vai retornar
+    - Possivelmente um ArrayList - Por decidir no Diagrama ER
+    - Falta decidir quais os argumentos também
+     */
+
+    /*
+    Fazer cautela porque ainda vamos ter que adicionar muitos mais metodos!
+     */
+
+    public synchronized void listarProjectos_Actuais() throws RemoteException, SQLException{}
+
+    /*
+    Listar projectos antigos
+     */
+
+    public synchronized void listarProjectos_Antigos() throws RemoteException, SQLException{}
+
+    /*
+    Consultar detalhes de um projeto
+     */
+
+    public synchronized void listarDetalhes_Projecto() throws RemoteException, SQLException{}
+
+    /*
+    Registar Conta
+    -A cada conta, deverá ser atribuído um saldo inicial de 100euro
+     */
+
+    public synchronized void registarConta() throws RemoteException, SQLException{}
+
+    /*
+    Login
+     */
+
+    public synchronized void login() throws RemoteException, SQLException{}
+
+    /*
+    Consultar saldo
+     */
+
+    public synchronized void listarSaldo_Pessoal() throws RemoteException, SQLException{}
+
+    /*
+    Consultar recompensas
+     */
+
+    public synchronized void listarRecompensas_Pessoais() throws RemoteException, SQLException{}
+
+    /*
+    Doar dinheiro ao projecto
+     */
+
+    public synchronized void doarDinheiro() throws RemoteException, SQLException{}
+
+    /*
+    Enviar mensagens para o Projecto
+     */
+
+    public synchronized void enviarMensagens_Projecto() throws RemoteException, SQLException{}
+
+    /*
+    Criar um projecto
+     */
+
+    public synchronized void criarProjecto() throws RemoteException, SQLException{}
+
+    /*
+    Adicionar ou remover recompensas ao projecto
+     */
+
+    public synchronized void adicionarRecompensas_Projecto() throws RemoteException, SQLException{}
+
+    public synchronized void removerRecompensas_Projecto() throws RemoteException, SQLException{}
+
+    /*
+    Cancelar um projecto
+     */
+
+    public synchronized void cancelarProjecto() throws RemoteException, SQLException{}
+
+    /*
+    Responder a mensagens de apoiantes
+     */
+
+    public synchronized void responderMensagens() throws RemoteException, SQLException{}
+
+    /*
+    Fim de um projecto
+     */
+
+    public synchronized void fimProjecto() throws RemoteException, SQLException{}
+
 
 
 }
