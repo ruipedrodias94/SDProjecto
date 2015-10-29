@@ -35,8 +35,9 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
 
         info = new Informations();
 
+        System.out.println(info.getUrl());
         try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             System.out.println("[DATABASE] Nao tem a Oracle JDBC Driver instalada!");
             return;
@@ -62,7 +63,7 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
     }
 
     /*
-    Metodo da borra só para testar se esta merda vai realmente buscar os dados
+    Metodo da borra sï¿½ para testar se esta merda vai realmente buscar os dados
      */
 
     public synchronized ArrayList<String> showCities() throws RemoteException, SQLException{
@@ -70,7 +71,7 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
         ArrayList<String> cona = new ArrayList<>();
         try {
             statement = connection.createStatement();
-            resultSet = statement.executeQuery(" SELECT * FROM world.city;");
+            resultSet = statement.executeQuery(" SELECT * FROM sys.sys_config");
             while (resultSet.next()){
                 cona.add(resultSet.getString(2));
             }
@@ -83,9 +84,9 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
 
     /*
     Listar Projectos actuais
-    - Ainda não sei o que vai retornar
+    - Ainda nï¿½o sei o que vai retornar
     - Possivelmente um ArrayList - Por decidir no Diagrama ER
-    - Falta decidir quais os argumentos também
+    - Falta decidir quais os argumentos tambï¿½m
      */
 
     /*
@@ -108,7 +109,7 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
 
     /*
     Registar Conta
-    -A cada conta, deverá ser atribuído um saldo inicial de 100euro
+    -A cada conta, deverï¿½ ser atribuï¿½do um saldo inicial de 100euro
      */
 
     public synchronized void registarConta() throws RemoteException, SQLException{}
