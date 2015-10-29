@@ -6,115 +6,116 @@ import java.util.*;
 // Thread a ler pedidos - feito
 // Imprimir resultados - claro que não, né?
 
+
 public class TCPClient {
-	public static void main(String args[]) {
+    public  static boolean debug = true;
+    public static void main(String args[]) throws IOException {
 
-		Socket s = null;
+        Socket s =null ;
 
-		Informations info = new Informations();
-
-
-
-
-			leSkt l = new leSkt();
-
-
-	}
+        leSkt l = new leSkt();
+    }
 }
 
 // Thread para estar constantemente a ler do socket - Para imprimir resultados
 class leSkt extends Thread {
-	Socket serverSocket;
-	DataInputStream in;
+    Socket serverSocket;
+    DataInputStream in = null;
     DataOutputStream out;
     Informations info = new Informations();
 
-	public leSkt() {
+    public leSkt() {
 
-
+        this.serverSocket = null;
         this.start();
     }
 
 
-	public void run() {
+    public void run() {
+        EscreveSck es=null;
         while(true){
-		try {
-            serverSocket = new Socket(this.info.getHostPrimario(), this.info.getServerPort());
-            System.out.println("Cliente ligado ao server no host: " + info.getHostPrimario() + " no porto: " + info.getServerPort());
-            in = new DataInputStream(serverSocket.getInputStream());
-            EscreveSck es = new EscreveSck(serverSocket);
-
-			while (true) {
-				String data = in.readUTF();
-				System.out.println(data);
-
-			}
-		} catch (EOFException e) {
-			System.out.println("EOF:" + e);
-		} catch (IOException e) {
-            this.info = new Informations();
             try {
-                sleep(1000);
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
-            System.out.print("Servidor Primário em baixo.\nTentativa de ligação ao servidor secundário.");
-			System.out.println("IO:" + e);
+
+                serverSocket = new Socket(info.getHostPrimario(),info.getServerPort());
+                System.out.println("Cliente ligado ao server no host: " + info.getHostPrimario() + " no porto: " + info.getServerPort());
+                in = new DataInputStream(this.serverSocket.getInputStream());
+                out = new DataOutputStream(this.serverSocket.getOutputStream());
+                es = new EscreveSck(this.serverSocket);
 
 
-        }
-	}}
+
+                while (true) {
+                    String data = in.readUTF();
+                    System.out.println(data);
+                }
+            } catch (EOFException e) {
+                System.out.println("EOF:" + e);
+            } catch (IOException e) {
+                System.out.println("Waiting to join-----------------------");
+                try {
+                    es.join();
+                } catch (InterruptedException e1) {
+                    if (TCPClient.debug)
+                        e1.printStackTrace();
+                }
+                System.out.println("joined thread-----");
+                this.info = new Informations();
+                try {
+
+                    this.currentThread().sleep(1000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                System.out.print("Servidor Primário em baixo.\nTentativa de ligação ao servidor secundário.");
+                System.out.println("IO:" + e);
+
+
+            } }
+    }
 }
 
 class EscreveSck extends Thread
 {
     Socket s;
     DataInputStream in;
-    DataOutputStream out;
+    DataOutputStream out = null;
     Informations info = new Informations();
 
 
     public  EscreveSck(Socket s)
     {
         this.s = s;
-       this.start();
+        this.start();
     }
 
     public void run()
     {
-        String texto = "";
-        try {
-            this.out = new DataOutputStream(s.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        InputStreamReader input = new InputStreamReader(System.in);
-        BufferedReader reader = new BufferedReader(input);
-        System.out.println("Introduza texto:");
+        while(true){
+            String texto = "";
+            InputStreamReader input = new InputStreamReader(System.in);
+            System.out.println("Introduza texto:");
 
-        // 3o passo
-        while (true) {
-            // READ STRING FROM KEYBOARD
-            try {
-                texto = reader.readLine();
-
-            } catch (Exception e) {
-                System.out.println(e.getLocalizedMessage());
-            }
-            // WRITE INTO THE SOCKET
-            try {
-                out = new DataOutputStream(s.getOutputStream());
-                out.writeUTF(texto);
-                out.flush();
-            } catch (IOException e) {
+            // 3o passo
+            while (true) {
+                // READ STRING FROM KEYBOARD
                 try {
-                    out = new DataOutputStream(s.getOutputStream());
-                    out.flush();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                    texto = reader.readLine();
+
+                } catch (Exception e) {
+                    System.out.println(e.getLocalizedMessage());
                 }
-                e.printStackTrace();
+                // WRITE INTO THE SOCKET
+                try {
+                    //out = new DataOutputStream(s.getOutputStream());
+                    this.out = new DataOutputStream(s.getOutputStream());
+                    out.writeUTF(texto);
+
+                } catch (Exception e) {
+
+                    break;
+                }
             }
+            break;
         }
     }
 

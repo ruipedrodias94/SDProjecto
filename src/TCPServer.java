@@ -103,6 +103,7 @@ public class TCPServer {
 				}
 
 				while (true) {
+
 					Socket clientSocket2 = listenSocket2.accept(); // BLOQUEANTE
 					new Connection(clientSocket2, numero, clienteRMI);
 
@@ -141,7 +142,7 @@ class Connection extends Thread {
 			clientSocket = aClientSocket;
 			in = new DataInputStream(clientSocket.getInputStream());
 			out = new DataOutputStream(aClientSocket.getOutputStream());
-			out.writeUTF("Bem vinda Sua Puta Fraca");
+			out.writeUTF("Bem vindo\n");
 			this.start();
 		} catch (IOException e) {
 			System.out.println("Connection:" + e.getMessage());
@@ -151,6 +152,7 @@ class Connection extends Thread {
 	// =============================
 	public void run() {
 		String resposta;
+
 		try {
 			while (true) {
 				// an echo server
@@ -277,10 +279,10 @@ class Ping extends Thread{
 					aSocket.send(reply);
 				}}
 			catch (SocketException e){System.out.println("Socket: " + e.getMessage());
-			}catch (IOException e) {System.out.println("IO: " + e.getMessage());
-				System.out.println("Servidor Secundário em baixo... Em casa de falha não há backup server.");
-			}finally {if(aSocket != null) aSocket.close();}
-
+			}catch (IOException e) {
+                System.out.println("IO: " + e.getMessage());
+                System.out.println("Servidor Secundário em baixo... Em casa de falha não há backup server.");
+            }
 		}
 		else
 		{
@@ -318,7 +320,7 @@ class Ping extends Thread{
 				}
 
 
-			}finally {if(aSocket2 != null) aSocket2.close();}
+			}
 		}
 	}}
 
