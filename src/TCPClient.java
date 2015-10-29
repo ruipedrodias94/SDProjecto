@@ -93,6 +93,7 @@ class EscreveSck extends Thread
         while(true){
             String texto = "";
             InputStreamReader input = new InputStreamReader(System.in);
+            BufferedReader reader = new BufferedReader(input);
             System.out.println("Introduza texto:");
 
             // 3o passo
