@@ -54,12 +54,13 @@ class leSkt extends Thread {
                 System.out.println("Waiting to join-----------------------");
                 try {
                     es.join();
+                    System.out.println("joined thread-----");
                 } catch (InterruptedException e1) {
                     if (TCPClient.debug)
                         e1.printStackTrace();
                 }
-                System.out.println("joined thread-----");
-                this.info = new Informations();
+
+
                 try {
 
                     this.currentThread().sleep(1000);
@@ -68,6 +69,7 @@ class leSkt extends Thread {
                 }
                 System.out.print("Servidor Primário em baixo.\nTentativa de ligação ao servidor secundário.");
                 System.out.println("IO:" + e);
+                info = new Informations();
 
 
             } }

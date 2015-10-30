@@ -222,11 +222,8 @@ class Shared_Clients {
 class Ping extends Thread{
 
 	Informations info = new Informations();
-	Properties props = new Properties();
-	InputStream inputConfigs = null;
 	boolean isPrimary;
-	String host, host2;
-	int port,port2;
+
 
 
 	Ping(boolean isPrimary)
@@ -266,7 +263,7 @@ class Ping extends Thread{
 			try{
 				isPrincipal();
 				aSocket = new DatagramSocket(this.info.getUdpPingPort());
-				System.out.println("Esperando ping requests no porto: "+ this.info.getUdpPingPort());
+				System.out.println("Esperando ping requests no porto: " + this.info.getUdpPingPort());
 				while(true){
 					byte[] buffer = new byte[1000];
 					DatagramPacket request = new DatagramPacket(buffer, buffer.length);
@@ -274,12 +271,12 @@ class Ping extends Thread{
 					s=new String(request.getData(), 0, request.getLength());
 					//System.out.println("Server Recebeu: " + s);
 					aSocket.setSoTimeout(1000);
-					DatagramPacket reply = new DatagramPacket(request.getData(),
-							request.getLength(), request.getAddress(), request.getPort());
+					DatagramPacket reply = new DatagramPacket(request.getData(), request.getLength(), request.getAddress(), request.getPort());
 					aSocket.send(reply);
 				}}
 			catch (SocketException e){System.out.println("Socket: " + e.getMessage());
 			}catch (IOException e) {
+                aSocket.close();
                 System.out.println("IO: " + e.getMessage());
                 System.out.println("Servidor Secundário em baixo... Em casa de falha não há backup server.");
             }
@@ -290,6 +287,7 @@ class Ping extends Thread{
 			DatagramSocket aSocket2 = null;
 			String texto = "HEARTBEAT";
 			isPrincipal();
+
 			try {
 				aSocket2 = new DatagramSocket();
 				System.out.println("Mandando Ping resquests para o host: "+info.getHostPrimario()+" no porto: "+info.getUdpPingPort());
@@ -313,6 +311,7 @@ class Ping extends Thread{
                 System.out.println("IO: " + e.getMessage());
 				System.out.println("Servidor Principal em baixo. Tentativa de Ligação como principal.");
 				this.isPrimary = true;
+                aSocket2.close();
 				try {
 					this.info.switchHosts();
 				} catch (IOException e1) {
