@@ -22,7 +22,7 @@ class leSkt extends Thread {
     Socket serverSocket;
     DataInputStream in = null;
     DataOutputStream out;
-    Informations info = new Informations();
+    Informations info = new Informations("Server1.properties");
 
     public leSkt() {
 
@@ -36,8 +36,8 @@ class leSkt extends Thread {
         while(true){
             try {
 
-                serverSocket = new Socket(info.getHostPrimario(),info.getServerPort());
-                System.out.println("Cliente ligado ao server no host: " + info.getHostPrimario() + " no porto: " + info.getServerPort());
+                serverSocket = new Socket(info.getThisHost(),info.getThisPort());
+                System.out.println("Cliente ligado ao server no host: " + info.getThisHost() + " no porto: " + info.getThisPort());
                 in = new DataInputStream(this.serverSocket.getInputStream());
                 out = new DataOutputStream(this.serverSocket.getOutputStream());
                 es = new EscreveSck(this.serverSocket);
@@ -69,7 +69,7 @@ class leSkt extends Thread {
                 }
                 System.out.print("Servidor Primário em baixo.\nTentativa de ligação ao servidor secundário.");
                 System.out.println("IO:" + e);
-                info = new Informations();
+
 
 
             } }
@@ -81,7 +81,7 @@ class EscreveSck extends Thread
     Socket s;
     DataInputStream in;
     DataOutputStream out = null;
-    Informations info = new Informations();
+    Informations info = new Informations("Server1.properties");
 
 
     public  EscreveSck(Socket s)

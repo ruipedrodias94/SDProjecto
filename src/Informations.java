@@ -19,11 +19,12 @@ public class Informations {
     private int tentativas;
 
     //Server
-    private int serverPort;
-    private int serverPort2;
-    private String hostPrimario;
-    private String hostSecundario;
-    private int udpPingPort;
+    private int thisPort;
+    private int otherPort;
+    private String thisHost;
+    private String otherHost;
+    private int sendUdpPingPort;
+    private int receiveUdpPingPort;
 
     //DataBase
     private String url;
@@ -33,12 +34,12 @@ public class Informations {
     private String hostDataBase;
     private String portDataBase;
 
-    public Informations(){
+    public Informations(String filename){
 
         Properties props = new Properties();
         FileInputStream file = null;
         try{
-            file = new FileInputStream("clientConf.properties");
+            file = new FileInputStream(filename);
             props.load(file);
             System.out.println("Leu do ficheiro de configuracoes com sucesso!");
 
@@ -51,10 +52,10 @@ public class Informations {
 
         this.setRmiRebind(props.getProperty("rmiRebind"));
         this.setRmiRegistry(Integer.parseInt(props.getProperty("rmiRegistry")));
-        this.setServerPort(Integer.parseInt(props.getProperty("portPrimario")));
-        this.setServerPort2(Integer.parseInt(props.getProperty("portSecundario")));
-        this.setHostPrimario(props.getProperty("hostPrimario"));
-        this.setHostSecundario((props.getProperty("hostSecundario")));
+        this.setThisPort(Integer.parseInt(props.getProperty("thisPort")));
+        this.setOtherPort(Integer.parseInt(props.getProperty("otherPort")));
+        this.setThisHost(props.getProperty("thisHost"));
+        this.setOtherHost(props.getProperty("otherHost"));
         this.setUser(props.getProperty("user"));
         this.setPass(props.getProperty("pass"));
         this.setHostDataBase(props.getProperty("host"));
@@ -63,29 +64,12 @@ public class Informations {
         this.setRmiIP(props.getProperty("rmiIp"));
         this.setUrl("jdbc:mysql://" + getHostDataBase() + ":" + getPortDataBase() + "/?user=" + getUser());
         this.setTentativas(Integer.parseInt(props.getProperty("tentativas")));
-        this.setUdpPingPort(Integer.parseInt(props.getProperty("udpPingPort")));
+        this.setSendUdpPingPort(Integer.parseInt(props.getProperty("sendUdpPingPort")));
+        this.setReceiveUdpPingPort(Integer.parseInt(props.getProperty("receiveUdpPingPort")));
 
     }
 
-    public void switchHosts() throws IOException {
-        int port1 = this.getServerPort();
-        int port2 = this.getServerPort2();
-        String host1 = this.getHostPrimario();
-        String host2 = this.getHostSecundario();
-        FileInputStream in = new FileInputStream("clientConf.properties");
-        Properties props = new Properties();
-        props.load(in);
-        FileOutputStream out = new FileOutputStream("clientConf.properties");
-        props.setProperty("hostPrimario",host2);
-        props.setProperty("hostSecundario",host1);
-        props.setProperty("portPrimario",String.valueOf(port2));
-        props.setProperty("portSecundario",String.valueOf(port1));
-        props.store(out, null);
-        out.close();
 
-
-
-    }
 
     public int getRmiRegistry() {
         return rmiRegistry;
@@ -103,20 +87,20 @@ public class Informations {
         this.rmiRebind = rmiRebind;
     }
 
-    public int getServerPort() {
-        return serverPort;
+    public int getThisPort() {
+        return this.thisPort;
     }
 
-    public void setServerPort(int serverPort) {
-        this.serverPort = serverPort;
+    public void setThisPort(int serverPort) {
+        this.thisPort = serverPort;
     }
 
-    public int getServerPort2() {
-        return serverPort2;
+    public int getOtherPort() {
+        return this.otherPort;
     }
 
-    public void setServerPort2(int serverPort2) {
-        this.serverPort2 = serverPort2;
+    public void setOtherPort(int serverPort2) {
+        this.otherPort = serverPort2;
     }
 
     public String getUrl() {
@@ -167,20 +151,20 @@ public class Informations {
         this.portDataBase = port;
     }
 
-    public String getHostPrimario() {
-        return hostPrimario;
+    public String getThisHost() {
+        return thisHost;
     }
 
-    public void setHostPrimario(String hostPrimario) {
-        this.hostPrimario = hostPrimario;
+    public void setThisHost(String hostPrimario) {
+        this.thisHost = hostPrimario;
     }
 
-    public String getHostSecundario() {
-        return hostSecundario;
+    public String getOtherHost() {
+        return this.otherHost;
     }
 
-    public void setHostSecundario(String hostSecundario) {
-        this.hostSecundario = hostSecundario;
+    public void setOtherHost(String hostSecundario) {
+        this.otherHost = hostSecundario;
     }
 
     public String getRmiIP() {
@@ -199,7 +183,11 @@ public class Informations {
         this.tentativas = tentativas;
     }
 
-    public int getUdpPingPort() {return udpPingPort;}
+    public int getSendUdpPingPort() {return this.sendUdpPingPort;}
 
-    public void setUdpPingPort(int udpPingPort) {this.udpPingPort = udpPingPort;}
+    public void setSendUdpPingPort(int udpPingPort) {this.sendUdpPingPort = udpPingPort;}
+
+    public int getReceiveUdpPingPort() {return receiveUdpPingPort;}
+
+    public void setReceiveUdpPingPort(int receiveUdpPingPort) {this.receiveUdpPingPort = receiveUdpPingPort;}
 }

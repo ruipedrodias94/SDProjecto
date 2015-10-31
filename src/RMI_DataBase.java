@@ -10,7 +10,7 @@ public class RMI_DataBase {
 
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
 
-        Informations info = new Informations();
+        Informations info = new Informations("Server1.properties");
 
         try {
 

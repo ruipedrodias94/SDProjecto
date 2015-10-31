@@ -33,7 +33,7 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
 
     public synchronized void connectDataBase() throws SQLException{
 
-        info = new Informations();
+        info = new Informations("Server1.properties");
 
         System.out.println(info.getUrl());
         try {
