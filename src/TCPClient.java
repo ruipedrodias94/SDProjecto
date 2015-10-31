@@ -65,7 +65,8 @@ class leSkt extends Thread {
                     host = info.getOtherHost();
                     port = info.getOtherPort();
                     try {
-                        serverSocket.close();
+                        if(serverSocket!=null)
+                            serverSocket.close();
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
