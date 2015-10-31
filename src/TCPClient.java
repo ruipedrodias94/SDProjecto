@@ -33,46 +33,44 @@ class leSkt extends Thread {
 
     public void run() {
         EscreveSck es=null;
-        while(true){
-            try {
-
-                serverSocket = new Socket(info.getThisHost(),info.getThisPort());
-                System.out.println("Cliente ligado ao server no host: " + info.getThisHost() + " no porto: " + info.getThisPort());
-                in = new DataInputStream(this.serverSocket.getInputStream());
-                out = new DataOutputStream(this.serverSocket.getOutputStream());
-                es = new EscreveSck(this.serverSocket);
-
-
-
-                while (true) {
-                    String data = in.readUTF();
-                    System.out.println(data);
-                }
-            } catch (EOFException e) {
-                System.out.println("EOF:" + e);
-            } catch (IOException e) {
-                System.out.println("Waiting to join-----------------------");
+            String host = info.getThisHost();
+            int port = info.getThisPort();
+            //Tentativa de ligação ao servidor
+            while(true) {
                 try {
-                    es.join();
-                    System.out.println("joined thread-----");
-                } catch (InterruptedException e1) {
-                    if (TCPClient.debug)
+
+                    serverSocket = new Socket(host, port);
+                    System.out.println("Cliente ligado ao server no host: " + host + " no porto: " + port);
+                    in = new DataInputStream(this.serverSocket.getInputStream());
+                    out = new DataOutputStream(this.serverSocket.getOutputStream());
+                    es = new EscreveSck(this.serverSocket);
+
+
+                    while (true) {
+                        String data = in.readUTF();
+                        System.out.println(data);
+                    }
+                } catch (EOFException e) {
+                    System.out.println("EOF:" + e);
+                } catch (IOException e) {
+
+                    try {
+
+                        this.currentThread().sleep(1000);
+                    } catch (InterruptedException e1) {
                         e1.printStackTrace();
+                    }
+                    System.out.print("Servidor Primário em baixo.\nTentativa de ligação ao servidor secundário.");
+                    System.out.println("IO:" + e);
+                    host = info.getOtherHost();
+                    port = info.getOtherPort();
+                    try {
+                        serverSocket.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
-
-
-                try {
-
-                    this.currentThread().sleep(1000);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-                System.out.print("Servidor Primário em baixo.\nTentativa de ligação ao servidor secundário.");
-                System.out.println("IO:" + e);
-
-
-
-            } }
+            }
     }
 }
 
@@ -118,7 +116,6 @@ class EscreveSck extends Thread
                     break;
                 }
             }
-            break;
         }
     }
 

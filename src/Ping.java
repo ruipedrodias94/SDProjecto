@@ -38,6 +38,8 @@ public class Ping extends Thread{
 
     public void run()
     {
+        TCPLink ligacaoCliente1;
+
         while(true){
             //Se o servidor for primario
             if(this.serverState == PRIMARIO)
@@ -49,8 +51,9 @@ public class Ping extends Thread{
                     isPrincipal();
                     aSocket = new DatagramSocket(this.info.getReceiveUdpPingPort());
                     System.out.println("Esperando ping requests no porto: " + this.info.getReceiveUdpPingPort());
-                    this.ligacaoCliente = new TCPLink(this.info);
+                    ligacaoCliente = new TCPLink(this.info);
                     while(true){
+
                         byte[] buffer = new byte[1000];
                         DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                         aSocket.receive(request);
@@ -89,7 +92,7 @@ public class Ping extends Thread{
                             aSocket2.send(request);
                             byte[] buffer = new byte[1000];
                             DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
-                            aSocket2.setSoTimeout(1000);
+                            aSocket2.setSoTimeout(2000);
                             //TODO TIMEOUT aqui também
                             aSocket2.receive(reply);
                             //System.out.println("Recebeu: " + new String(reply.getData(), 0, reply.getLength()));
@@ -113,16 +116,7 @@ public class Ping extends Thread{
                             break;
                         }
                     }
-                    finally {
-                        if(ligacaoCliente!=null){
-                        try {
-                            System.out.print("joining the thread");
-                            ligacaoCliente.join();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        }
-                    }
+
                 }
             }
         }

@@ -33,7 +33,8 @@ public class TCPLink extends Thread{
             }
             //Criar socket de ligacao ao cliente
             InetAddress hostAddress = InetAddress.getByName(this.host);
-            listenSocket = new ServerSocket(this.port);
+            listenSocket = new ServerSocket(this.port,50,hostAddress);
+            listenSocket.setReuseAddress(true);
             System.out.println("[Ligacao TCP à escuta no host: " + hostAddress + " no porto " + this.port + "]");
 
 
@@ -61,12 +62,26 @@ public class TCPLink extends Thread{
 
 
         } catch (UnknownHostException e) {
+            try {
+                currentThread().join();
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         } catch (IOException e) {
+            try {
+                currentThread().join();
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         }
         finally {
-
+            try {
+                currentThread().join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             if(listenSocket!=null){
                 try {
                     System.out.print("Socket closed");
@@ -74,12 +89,7 @@ public class TCPLink extends Thread{
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }}
-            try {
-                System.out.println("Thread joined here");
-                currentThread().join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
         }
     }
 }
