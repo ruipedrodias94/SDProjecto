@@ -18,9 +18,9 @@ public interface RMI_DataBase_Interface extends Remote {
      */
 
     /*================================Metodos_de_Listar=========================================*/
-    public void listarProjectos_Actuais() throws RemoteException, SQLException;
-    public void listarProjectos_Antigos() throws RemoteException, SQLException;
-    public void listarDetalhes_Projecto() throws RemoteException, SQLException;
+    public ArrayList<String> listarProjectos_Actuais() throws RemoteException, SQLException;
+    public ArrayList<String> listarProjectos_Antigos() throws RemoteException, SQLException;
+    public String listarDetalhes_Projecto(int id_Projecto) throws RemoteException, SQLException;
     public void listarSaldo_Pessoal() throws RemoteException, SQLException;
     public void listarRecompensas_Pessoais() throws RemoteException, SQLException;
 
@@ -30,14 +30,15 @@ public interface RMI_DataBase_Interface extends Remote {
     public void removerRecompensas_Projecto() throws RemoteException, SQLException;
     public void enviarMensagens_Projecto() throws RemoteException, SQLException;
     public void doarDinheiro() throws RemoteException, SQLException;
-    public void criarProjecto() throws RemoteException, SQLException;
-    public void cancelarProjecto() throws RemoteException, SQLException;
+    public void criarProjecto(String nome_Projecto, String desricao_Projecto, String data, int id_Cliente ) throws RemoteException, SQLException;
+    public int cancelarProjecto(int id_Projecto) throws RemoteException, SQLException;
     public void responderMensagens() throws RemoteException, SQLException;
 
 
-    public void registarConta() throws RemoteException, SQLException;
-    public void fimProjecto() throws RemoteException, SQLException;
-
+    public void registarConta(String nome_Cliente, String user_Name, String password, int saldo) throws RemoteException, SQLException;
+    public void fimProjecto () throws RemoteException, SQLException;
+    public int checkUser(String nome_Cliente) throws RemoteException, SQLException;
+    public int find_Cliente_ID(String userName) throws RemoteException, SQLException;
 
     /*================================Login====================================================*/
     public void login() throws RemoteException, SQLException;
