@@ -37,7 +37,8 @@ public interface RMI_DataBase_Interface extends Remote {
 
     public void registarConta(String nome_Cliente, String user_Name, String password, int saldo) throws RemoteException, SQLException;
     public void fimProjecto () throws RemoteException, SQLException;
-
+    public int checkUser(String nome_Cliente) throws RemoteException, SQLException;
+    public int find_Cliente_ID(String userName) throws RemoteException, SQLException;
 
     /*================================Login====================================================*/
     public void login() throws RemoteException, SQLException;
