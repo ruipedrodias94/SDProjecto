@@ -25,6 +25,7 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
     Connection connection = null;
     Statement statement = null;
     ResultSet resultSet = null;
+    PreparedStatement preparedStatement = null;
 
     private int FALSE = 0;
     private int TRUE = 1;
@@ -112,7 +113,27 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
     -A cada conta, dever� ser atribu�do um saldo inicial de 100euro
      */
 
-    public synchronized void registarConta() throws RemoteException, SQLException{}
+    public synchronized void registarConta(String nome_Cliente, String user_Name, String password, int saldo) throws RemoteException, SQLException{
+
+        try{
+
+            preparedStatement = connection.prepareStatement("INSERT INTO mydb.cliente(nome_Cliente, user_Name, password, saldo) " +
+                    "VALUES (?,?,?,?);");
+
+            //preparedStatement.setInt(1, 1);
+            preparedStatement.setString(1, nome_Cliente);
+            preparedStatement.setString(2, user_Name);
+            preparedStatement.setString(3, password);
+            preparedStatement.setInt(4,saldo);
+
+            preparedStatement.executeUpdate();
+
+            System.out.println("QUELIENTE ADICIONADO! PARA BÉNS");
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+            e.printStackTrace();
+        }
+    }
 
     /*
     Login
@@ -148,7 +169,29 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
     Criar um projecto
      */
 
-    public synchronized void criarProjecto() throws RemoteException, SQLException{}
+    public synchronized void criarProjecto(String nome_Projecto, String desricao_Projecto, String data, int id_Cliente ) throws RemoteException, SQLException{
+        //Saldo = 0
+        //Estado = 1 ---> Activo
+        //Data limite ---> Ainda nao sei
+        //Dinheiro angariado = 0
+        //id_Cliente ---> Tambem ainda nao sei como meter
+        //A data vai ter que ser do tipo 20151030  ---> 30-10-2015 Passamos como string, e no menu pede-se o dia o mes e o ano, tornando dempois numa string
+
+        try{
+            preparedStatement = connection.prepareStatement("INSERT INTO mydb.projecto (id_Projecto, nome_Projecto, descricao_Projecto, estado, data_Limite, dinheiro_Angariado) " +
+                    "+ VALUES (?,?,?,?,?);");
+
+            preparedStatement.setString(1,nome_Projecto);
+            preparedStatement.setString(2,desricao_Projecto);
+            //Estado a 1 ---> Activo
+            preparedStatement.setInt(3, 1);
+            preparedStatement.setString(4,data);
+            preparedStatement.setInt(5,id_Cliente);
+
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+        }
+    }
 
     /*
     Adicionar ou remover recompensas ao projecto
@@ -169,6 +212,7 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
      */
 
     public synchronized void responderMensagens() throws RemoteException, SQLException{}
+
 
     /*
     Fim de um projecto
