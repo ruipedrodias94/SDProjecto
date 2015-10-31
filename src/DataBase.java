@@ -94,19 +94,93 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
     Fazer cautela porque ainda vamos ter que adicionar muitos mais metodos!
      */
 
-    public synchronized void listarProjectos_Actuais() throws RemoteException, SQLException{}
+    public synchronized ArrayList<String> listarProjectos_Actuais() throws RemoteException, SQLException{
+        ArrayList<String> projectos_Actuais = new ArrayList<>();
+        String nome_Projecto, data_Final, nome_Cliente, estado = "";
+        String string_Final = "";
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT nome_Projecto, data_Limite, nome_Cliente FROM projecto, cliente " +
+                    "WHERE projecto.estado = 1 AND projecto.id_Cliente = cliente.id_Cliente;");
+            while (resultSet.next()){
+                nome_Projecto = resultSet.getString(1);
+                data_Final = resultSet.getString(2);
+                nome_Cliente = resultSet.getString(3);
+                estado = "ACTIVO";
+                string_Final = "NOME DO PROJECTO: " + nome_Projecto + "DATA LIMITE: " + data_Final + "NOME DO ADMIN: "
+                        + nome_Cliente + "ESTADO: " + estado;
+
+                projectos_Actuais.add(string_Final);
+            }
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        return projectos_Actuais;
+    }
 
     /*
     Listar projectos antigos
      */
 
-    public synchronized void listarProjectos_Antigos() throws RemoteException, SQLException{}
+    public synchronized ArrayList<String> listarProjectos_Antigos() throws RemoteException, SQLException{
+        ArrayList<String> projectos_Antigos = new ArrayList<>();
+        String nome_Projecto = "" , data_Final = "", nome_Cliente = "", estado = "";
+        String string_Final = "";
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT nome_Projecto, data_Limite, nome_Cliente FROM projecto, cliente " +
+                    "WHERE projecto.estado = 0 AND projecto.id_Cliente = cliente.id_Cliente;");
+            while (resultSet.next()){
+                nome_Projecto = resultSet.getString(1);
+                data_Final = resultSet.getString(2);
+                nome_Cliente = resultSet.getString(3);
+                estado = "FINALIZADO";
+                string_Final = "NOME DO PROJECTO: " + nome_Projecto + "DATA LIMITE: " + data_Final + "NOME DO ADMIN: "
+                        + nome_Cliente + "ESTADO: " + estado;
+
+                projectos_Antigos.add(string_Final);
+            }
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        return projectos_Antigos;
+    }
 
     /*
     Consultar detalhes de um projeto
      */
 
-    public synchronized void listarDetalhes_Projecto() throws RemoteException, SQLException{}
+    public synchronized String listarDetalhes_Projecto(int id_Projecto) throws RemoteException, SQLException{
+        String string_Final = "", nome_Projecto = "", descricao_Projecto= "", data_Limite = "";
+        int dinheiro_Angariado, dinheiro_Limite;
+
+        try{
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT nome_Projecto, descricao_Projecto, data_Limite, dinheiro_Angariado, dinheiro_Limite " +
+                    "FROM projecto WHERE id_Projecto=" + id_Projecto + ";");
+
+            nome_Projecto = resultSet.getString(1);
+            descricao_Projecto = resultSet.getString(2);
+            data_Limite = resultSet.getString(3);
+            dinheiro_Angariado = resultSet.getInt(4);
+            dinheiro_Limite = resultSet.getInt(5);
+
+            string_Final = "DETALHES DO PROJECTO: \n"
+                    + "NOME: " + nome_Projecto + "\n"
+                    + "DESCRICAO: " + descricao_Projecto + "\n"
+                    + "DATA LIMITE: " + data_Limite + "\n"
+                    + "DINHEIRO ANGARIADO: " + dinheiro_Angariado + "\n"
+                    + "DINHEIRO NECESSARIO: " + dinheiro_Limite;
+
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        return string_Final;
+
+    }
 
     /*
     Registar Conta
@@ -138,6 +212,7 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
     /*
     Login
      */
+
 
     public synchronized void login() throws RemoteException, SQLException{}
 
@@ -205,7 +280,18 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
     Cancelar um projecto
      */
 
-    public synchronized void cancelarProjecto() throws RemoteException, SQLException{}
+    /*Return TRUE caso consiga, falso se nao der*/
+    public synchronized int cancelarProjecto(int id_Projecto) throws RemoteException, SQLException{
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("UPDATE projecto SET estado = 0 where id_Projecto ="+id_Projecto+";");
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+            return FALSE;
+        }
+
+        return TRUE;
+    }
 
     /*
     Responder a mensagens de apoiantes
