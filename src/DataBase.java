@@ -1,12 +1,16 @@
 
 import com.sun.xml.internal.bind.v2.TODO;
 
+import javax.swing.text.StyleContext;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
 import java.sql.Connection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.sql.Date;
+import java.util.*;
 
 /**
  * Created by ruype_000 on 24/10/2015.
@@ -217,12 +221,6 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
         }
     }
 
-    /*
-    Login
-     */
-
-
-    public synchronized void login() throws RemoteException, SQLException{}
 
     /*
     Consultar saldo
@@ -300,11 +298,6 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
         }
     }*/
 
-    /*
-    Enviar mensagens para o Projecto
-     */
-
-    public synchronized void enviarMensagens_Projecto() throws RemoteException, SQLException{}
 
     /*
     Criar um projecto
@@ -401,11 +394,68 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
         return TRUE;
     }
 
+
+    /*
+    Enviar mensagens para o Projecto
+     */
+
+    public synchronized int enviarMensagens_Projecto(String assunto, String conteudo,  int id_Cliente, int id_Projecto) throws RemoteException, SQLException{
+        //Como vai ser de enviar mensagens o tipo vai ser 1
+        //A data vai ser a data actual
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+        int tipo = 1;
+
+        try{
+            preparedStatement = connection.prepareStatement("INSERT INTO mydb.mensagem (assunto_Mensagem, conteudo_Mensagem, data_Mensagem, tipo_Mensagem, Cliente_id_Cliente, Projecto_id_Projecto) " +
+                    "VALUES (?, ?, ?, ?, ?, ?)");
+
+            preparedStatement.setString(1, assunto);
+            preparedStatement.setString(2, conteudo);
+            preparedStatement.setDate(3, Date.valueOf(timeStamp));
+            preparedStatement.setInt(4, tipo);
+            preparedStatement.setInt(5, id_Cliente);
+            preparedStatement.setInt(6, id_Projecto);
+
+            preparedStatement.executeUpdate();
+
+
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+            return FALSE;
+        }
+        return TRUE;
+    }
+
     /*
     Responder a mensagens de apoiantes
      */
 
-    public synchronized void responderMensagens() throws RemoteException, SQLException{}
+    public synchronized int responderMensagens(String assunto, String conteudo,  int id_Cliente, int id_Projecto) throws RemoteException, SQLException{
+        //Como vai ser de enviar mensagens o tipo vai ser 1
+        //A data vai ser a data actual
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+        int tipo = 2;
+
+        try{
+            preparedStatement = connection.prepareStatement("INSERT INTO mydb.mensagem (assunto_Mensagem, conteudo_Mensagem, data_Mensagem, tipo_Mensagem, Cliente_id_Cliente, Projecto_id_Projecto) " +
+                    "VALUES (?, ?, ?, ?, ?, ?)");
+
+            preparedStatement.setString(1, assunto);
+            preparedStatement.setString(2, conteudo);
+            preparedStatement.setDate(3, Date.valueOf(timeStamp));
+            preparedStatement.setInt(4, tipo);
+            preparedStatement.setInt(5, id_Cliente);
+            preparedStatement.setInt(6, id_Projecto);
+
+            preparedStatement.executeUpdate();
+
+
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+            return FALSE;
+        }
+        return TRUE;
+    }
 
 
     /*
@@ -415,8 +465,58 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
     public synchronized void fimProjecto() throws RemoteException, SQLException{}
 
 
+    public synchronized String ler_Mensagem_Projecto(int id_Projecto, int id_Mensagem){
+        String string_Final = "";
+        int id = 0;
+        String assunto = ""; String conteudo = "";
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT id_Mensagem, assunto_Mensagem, conteudo_Mensagem\n" +
+                    "FROM mydb.projecto, mydb.mensagem\n" +
+                    "where projecto.id_Projecto = mensagem.Projecto_id_Projecto and projecto.id_Projecto ="+id_Projecto +"" +
+                    "and mensagem.id_Mensagem = "+id_Mensagem+";");
+
+            while(resultSet.next()){
+                id = resultSet.getInt(1);
+                assunto = resultSet.getString(2);
+                conteudo = resultSet.getString(3);
+
+                string_Final = "ID MENSAGEM: " + String.valueOf(id) + "\nASSUNTO DA MENSAGEM: " + assunto
+                        + "\nCONTEUDO: " + conteudo;
+            }
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+        }
+        return string_Final;
+    }
+
+    public synchronized String ler_Mensagem_Cliente(int id_Cliente, int id_Mensagem){
+        String string_Final = "";
+        int id = 0;
+        String assunto = ""; String conteudo = "";
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT id_Mensagem, assunto_Mensagem, conteudo_Mensagem\n" +
+                    "FROM mydb.cliente, mydb.mensagem"+
+                    "where cliente.id_Cliente = mensagem.Cliente_id_Cliente and cliente.id_Cliente ="+id_Cliente+"" +
+                    "and mensagem.id_Mensagem="+id_Mensagem+";");
+
+            while(resultSet.next()){
+                id = resultSet.getInt(1);
+                assunto = resultSet.getString(2);
+                conteudo = resultSet.getString(3);
+
+                string_Final = "ID MENSAGEM: " + String.valueOf(id) + "\nASSUNTO DA MENSAGEM: " + assunto
+                        + "\nCONTEUDO: " + conteudo;
+            }
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+        }
+        return string_Final;
+    }
+
     //FUNCIONAL
-    public synchronized int checkUser(String nome_Cliente) throws RemoteException, SQLException{
+    public synchronized int checkUserName(String nome_Cliente) throws RemoteException, SQLException{
         try {
             statement = connection.createStatement();
             resultSet = statement.executeQuery("SELECT * FROM mydb.cliente WHERE user_Name= '"+nome_Cliente+"';");
@@ -448,5 +548,83 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
         return id_Cliente;
     }
 
+
+        /*
+    Login
+     */
+
+    //FUNCIONAL
+    public synchronized int login(String user_Name, String password) throws RemoteException, SQLException{
+        try{
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT * FROM mydb.cliente" +
+                    " WHERE user_Name = '"+user_Name +"' AND password = '"+ password +"';");
+
+            while (resultSet.next()){
+                return TRUE;
+            }
+
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        return FALSE;
+    }
+
+    public synchronized ArrayList<String> listar_Mensagens_Cliente(int id_Cliente) throws RemoteException, SQLException{
+        ArrayList<String> listaMsgs = new ArrayList<>();
+        String string_Final = "";
+        String nome_Cliente = ""; String assunto_Mensagem = "";
+        int id_Mensagem = 0; int tipo_Mensagem = 0;
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT nome_Cliente, id_Mensagem, assunto_Mensagem, tipo_Mensagem FROM mydb.cliente, mydb.mensagem " +
+                    "where cliente.id_Cliente = mensagem.Cliente_id_Cliente " +
+                    "and cliente.id_Cliente = " + id_Cliente + ";");
+
+            while (resultSet.next()) {
+                nome_Cliente = resultSet.getString(1);
+                id_Mensagem = resultSet.getInt(2);
+                assunto_Mensagem = resultSet.getString(3);
+                tipo_Mensagem = resultSet.getInt(4);
+
+                string_Final = "NOME : " + nome_Cliente + "\nID MENSAGEM: " + String.valueOf(id_Mensagem) +
+                        "\nASSUNTO: " + assunto_Mensagem + "TIPO MENSAGEM: " + String.valueOf(tipo_Mensagem);
+
+                listaMsgs.add(string_Final);
+            }
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+        }
+        return listaMsgs;
+    }
+
+    public synchronized ArrayList<String> listar_Mensagens_Projecto(int id_Projecto) throws RemoteException, SQLException{
+        ArrayList<String> listaMsgs = new ArrayList<>();
+        String string_Final = "";
+        String nome_Cliente = ""; String assunto_Mensagem = "";
+        int id_Mensagem = 0; int tipo_Mensagem = 0;
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT nome_Projecto, id_Mensagem, assunto_Mensagem, tipo_Mensagem FROM mydb.projecto, mydb.mensagem " +
+                    "where projecto.id_Projecto = mensagem.Projecto_id_Projecto " +
+                    "and projecto.id_Projecto = " + id_Projecto + ";");
+
+            while (resultSet.next()) {
+                nome_Cliente = resultSet.getString(1);
+                id_Mensagem = resultSet.getInt(2);
+                assunto_Mensagem = resultSet.getString(3);
+                tipo_Mensagem = resultSet.getInt(4);
+
+                string_Final = "NOME : " + nome_Cliente + "\nID MENSAGEM: " + String.valueOf(id_Mensagem) +
+                        "\nASSUNTO: " + assunto_Mensagem + "TIPO MENSAGEM: " + String.valueOf(tipo_Mensagem);
+
+                listaMsgs.add(string_Final);
+            }
+        }catch (SQLException e){
+            System.out.println(e.getLocalizedMessage());
+        }
+        return listaMsgs;
+    }
 
 }
