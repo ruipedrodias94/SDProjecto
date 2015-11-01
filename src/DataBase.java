@@ -75,7 +75,7 @@ public class DataBase extends UnicastRemoteObject implements RMI_DataBase_Interf
         ArrayList<String> cona = new ArrayList<>();
         try {
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM mydb.cliente");
+            resultSet = statement.executeQuery("SELECT * FROM sys.sys_config");
             while (resultSet.next()){
                 cona.add(resultSet.getString(2));
             }

@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.*;
 import java.rmi.RMISecurityManager;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
 /**
@@ -42,6 +43,7 @@ public class TCPLink extends Thread{
                     clienteRMI = (RMI_DataBase_Interface) LocateRegistry.getRegistry(info.getRmiIP(), info.getRmiRegistry()).lookup(info.getRmiRebind());
                     System.out.println("Cliente RMI ligado!");
                 } catch (Exception e) {
+
                     e.printStackTrace();
                     System.out.println("Error establishing connection with RMI.\nPlease try again later");
                     System.exit(1);
@@ -64,14 +66,25 @@ public class TCPLink extends Thread{
                     e1.printStackTrace();
                 }
                 e.printStackTrace();
-            } catch (IOException e) {
+            } catch (RemoteException c)
+            {
                 try {
-                    currentThread().join();
-                    System.out.print("JOINED");
-                } catch (InterruptedException e1) {
+                    System.out.println("Tentativa Religação ao server RMI...");
+                    System.getProperties().put("java.security.policy", "security.policy");
+                    System.setSecurityManager(new RMISecurityManager());
+                    clienteRMI = (RMI_DataBase_Interface) LocateRegistry.getRegistry(info.getRmiIP(), info.getRmiRegistry()).lookup(info.getRmiRebind());
+                    System.out.println("Cliente RMI ligado!");
+                } catch (Exception e1) {
+
                     e1.printStackTrace();
+                    System.out.println("Error establishing connection with RMI.\nPlease try again later");
+                    System.exit(1);
                 }
-                e.printStackTrace();
+            }
+            catch (IOException e) {
+                    e.printStackTrace();
+
+
             } finally {
                 try {
                     currentThread().join();

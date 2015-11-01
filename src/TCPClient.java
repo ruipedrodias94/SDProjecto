@@ -76,7 +76,46 @@ class leSkt extends Thread {
                 }
 
             } catch (EOFException e) {
-                System.out.print("Server em baixo");
+                int tentativas = 3;
+                System.out.println("Server em baixo... Tentativa de religação");
+                while(tentativas>0)
+                {
+                    try {
+                        System.out.println("Tentativa "+(4-tentativas)+"...");
+                        serverSocket = new Socket(host, port);
+                        System.out.println("Cliente ligado ao server no host: " + host + " no porto: " + port);
+                        in = new DataInputStream(this.serverSocket.getInputStream());
+                        out = new DataOutputStream(this.serverSocket.getOutputStream());
+                        es = new EscreveSck(this.serverSocket);
+
+                    } catch (UnknownHostException e1) {
+                        if(tentativas==1){
+                            System.out.println("Religação sem sucesso. Falha longa...\n Procurando outro server.");
+                        }
+                        try {
+                            sleep(2000);
+                        } catch (InterruptedException e2) {
+                            e2.printStackTrace();
+                        }
+
+                        tentativas--;
+                    } catch (IOException e1) {
+                        if(tentativas==1){
+                            System.out.println("Religação sem sucesso. Falha longa...\n Procurando outro server.");
+                        }
+
+                        try {
+                            sleep(2000);
+                        } catch (InterruptedException e2) {
+                            e2.printStackTrace();
+                        }
+                        tentativas--;
+
+
+
+                    }
+                }
+
 
 
 
