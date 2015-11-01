@@ -44,7 +44,6 @@ public class TCPLink extends Thread{
                     System.out.println("Cliente RMI ligado!");
                 } catch (Exception e) {
 
-                    e.printStackTrace();
                     System.out.println("Error establishing connection with RMI.\nPlease try again later");
                     System.exit(1);
                 }
@@ -59,13 +58,12 @@ public class TCPLink extends Thread{
 
             } catch (UnknownHostException e) {
                 try {
-                    e.printStackTrace();
                     currentThread().join();
                     System.out.print("JOINED");
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
-                e.printStackTrace();
+
             } catch (RemoteException c)
             {
                 try {
@@ -76,13 +74,13 @@ public class TCPLink extends Thread{
                     System.out.println("Cliente RMI ligado!");
                 } catch (Exception e1) {
 
-                    e1.printStackTrace();
+
                     System.out.println("Error establishing connection with RMI.\nPlease try again later");
                     System.exit(1);
                 }
             }
             catch (IOException e) {
-                    e.printStackTrace();
+                System.out.println("Ligação TCP negada.");
 
 
             } finally {

@@ -123,8 +123,7 @@ class leSkt extends Thread {
 
                 try {
 
-                    this.currentThread().sleep(5000);
-                    System.out.print("sleep");
+                    this.currentThread().sleep(2000);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
