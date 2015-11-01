@@ -21,16 +21,16 @@ public interface RMI_DataBase_Interface extends Remote {
     public ArrayList<String> listarProjectos_Actuais() throws RemoteException, SQLException;
     public ArrayList<String> listarProjectos_Antigos() throws RemoteException, SQLException;
     public String listarDetalhes_Projecto(int id_Projecto) throws RemoteException, SQLException;
-    public void listarSaldo_Pessoal() throws RemoteException, SQLException;
-    public void listarRecompensas_Pessoais() throws RemoteException, SQLException;
+    public String listarSaldo_Pessoal(int id_Cliente) throws RemoteException, SQLException;
+    public ArrayList<String> listarRecompensas_Projecto(int id_Projecto) throws RemoteException, SQLException;
 
 
     /*================================Metodos_de_Accoes=========================================*/
-    public void adicionarRecompensas_Projecto() throws RemoteException, SQLException;
-    public void removerRecompensas_Projecto() throws RemoteException, SQLException;
+    public int adicionarRecompensas_Projecto(int id_Projecto, String descricao_Recompensa, int tipo_Recompensa) throws RemoteException, SQLException;
+    public int removerRecompensas_Projecto(int id_Projecto, int id_Recompensa) throws RemoteException, SQLException;
     public void enviarMensagens_Projecto() throws RemoteException, SQLException;
-    public void doarDinheiro() throws RemoteException, SQLException;
-    public void criarProjecto(String nome_Projecto, String desricao_Projecto, String data, int id_Cliente ) throws RemoteException, SQLException;
+    //public void doarDinheiro() throws RemoteException, SQLException;
+    public void criarProjecto(String nome_Projecto, String desricao_Projecto, String data, int id_Cliente, int dinheiro_Limite ) throws RemoteException, SQLException;
     public int cancelarProjecto(int id_Projecto) throws RemoteException, SQLException;
     public void responderMensagens() throws RemoteException, SQLException;
 
