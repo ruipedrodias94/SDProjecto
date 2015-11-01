@@ -38,7 +38,7 @@ public class Ping extends Thread{
 
     public void run()
     {
-        TCPLink ligacaoCliente1;
+        TCPLink ligacaoCliente;
 
         while(true){
             //Se o servidor for primario
@@ -47,11 +47,13 @@ public class Ping extends Thread{
 
                 DatagramSocket aSocket = null;
                 String s;
+                int tentativas2 = 3;
+                while(tentativas2>0){
                 try{
                     isPrincipal();
                     aSocket = new DatagramSocket(this.info.getReceiveUdpPingPort());
                     System.out.println("Esperando ping requests no porto: " + this.info.getReceiveUdpPingPort());
-                    ligacaoCliente = new TCPLink(this.info);
+                    this.ligacaoCliente = new TCPLink(this.info,info.getThisPort(),info.getThisHost());
                     while(true){
 
                         byte[] buffer = new byte[1000];
@@ -59,17 +61,20 @@ public class Ping extends Thread{
                         aSocket.receive(request);
                         s=new String(request.getData(), 0, request.getLength());
                         //System.out.println("Server Recebeu: " + s);
-                        aSocket.setSoTimeout(2000);
+                        aSocket.setSoTimeout(1000);
                         //TODO Colocar timeout a carregar do ficheiro de configurações
                         DatagramPacket reply = new DatagramPacket(request.getData(), request.getLength(), request.getAddress(), request.getPort());
                         aSocket.send(reply);
                     }}
-                catch (SocketException e){System.out.println("Socket: " + e.getMessage());
+                catch (SocketException e){
+                    System.out.println("Demasiados servidores ligados... " + e.getMessage());
+                    System.exit(1);
                 }catch (IOException e) {
                     aSocket.close();
+                    tentativas2--;
                     System.out.println("IO: " + e.getMessage());
                     System.out.println("Servidor Secundário em baixo... Em casa de falha não há backup server.");
-            }}
+            }}}
             else if(this.serverState==SECUNDARIO)
             {
                 //Ping caso secundário
@@ -81,7 +86,7 @@ public class Ping extends Thread{
                     try {
                         aSocket2 = new DatagramSocket();
                         System.out.println("Mandando Ping resquests para o host: " + info.getOtherHost() + " no porto: " + info.getSendUdpPingPort());
-                        TCPLink ligacaoCliente = new TCPLink(this.info);
+                        this.ligacaoCliente = new TCPLink(this.info,info.getOtherPort(),info.getOtherHost());
                         while(true)
                         {
 
@@ -92,7 +97,7 @@ public class Ping extends Thread{
                             aSocket2.send(request);
                             byte[] buffer = new byte[1000];
                             DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
-                            aSocket2.setSoTimeout(2000);
+                            aSocket2.setSoTimeout(1000);
                             //TODO TIMEOUT aqui também
                             aSocket2.receive(reply);
                             //System.out.println("Recebeu: " + new String(reply.getData(), 0, reply.getLength()));
@@ -100,6 +105,7 @@ public class Ping extends Thread{
                     }
                     catch (SocketException e){System.out.println("Socket: " + e.getMessage());
                     }catch (IOException e){
+
                         System.out.println("IO: " + e.getMessage());
                         if(tentativas>1){
                             tentativas--;
@@ -112,7 +118,7 @@ public class Ping extends Thread{
                         else {
                             System.out.println("Sem Resposta. Tentativa de ligação como servidor Primário");
                             this.serverState = PRIMARIO;
-                            aSocket2.close();
+
                             break;
                         }
                     }

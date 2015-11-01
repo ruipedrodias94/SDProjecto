@@ -14,10 +14,10 @@ public class TCPLink extends Thread{
     RMI_DataBase_Interface clienteRMI = null;
     ServerSocket listenSocket;
 
-    public TCPLink(Informations info) throws IOException {
+    public TCPLink(Informations info, int port, String host1) throws IOException {
         this.info = info;
-        port = info.getThisPort();
-        host = info.getThisHost();
+        this.port = port;
+        host = host1;
         this.start();
     }
 
@@ -25,71 +25,70 @@ public class TCPLink extends Thread{
 
     public void run()
     {
-        try {
-            if(listenSocket!=null)
-            {
-                System.out.print("Socket closed");
-                listenSocket.close();
-            }
-            //Criar socket de ligacao ao cliente
-            InetAddress hostAddress = InetAddress.getByName(this.host);
-            listenSocket = new ServerSocket(this.port,50,hostAddress);
-            listenSocket.setReuseAddress(true);
-            System.out.println("[Ligacao TCP à escuta no host: " + hostAddress + " no porto " + this.port + "]");
-
-
-            //Tentativa de ligacao ao servidor RMI
             try {
 
-                System.getProperties().put("java.security.policy", "security.policy");
-                System.setSecurityManager(new RMISecurityManager());
-                clienteRMI = (RMI_DataBase_Interface) LocateRegistry.getRegistry(info.getRmiIP(), info.getRmiRegistry()).lookup(info.getRmiRebind());
-                System.out.println("Cliente RMI ligado!");
-            }catch (Exception e)
-            {
-                System.out.println("Error establishing connection with RMI.\nPlease try again later");
-                System.exit(1);
-            }
 
-            //Threads de ligacao ao cliente TCP
-            while (true) {
-                Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
-                new Connection(clientSocket, this.client_number, clienteRMI);
+                //Criar socket de ligacao ao cliente
+                InetAddress hostAddress = InetAddress.getByName(this.host);
+                listenSocket = new ServerSocket(this.port, 500, hostAddress);
+                System.out.println("[Ligacao TCP à escuta no host: " + hostAddress + " no porto " + this.port + "]");
 
 
-                this.client_number++;
-            }
-
-
-        } catch (UnknownHostException e) {
-            try {
-                currentThread().join();
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
-            e.printStackTrace();
-        } catch (IOException e) {
-            try {
-                currentThread().join();
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                currentThread().join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if(listenSocket!=null){
+                //Tentativa de ligacao ao servidor RMI
                 try {
-                    System.out.print("Socket closed");
-                    listenSocket.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }}
 
-        }
+                    System.getProperties().put("java.security.policy", "security.policy");
+                    System.setSecurityManager(new RMISecurityManager());
+                    clienteRMI = (RMI_DataBase_Interface) LocateRegistry.getRegistry(info.getRmiIP(), info.getRmiRegistry()).lookup(info.getRmiRebind());
+                    System.out.println("Cliente RMI ligado!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("Error establishing connection with RMI.\nPlease try again later");
+                    System.exit(1);
+                }
+
+                //Threads de ligacao ao cliente TCP
+                while (true) {
+                    Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
+                    new Connection(clientSocket, this.client_number, clienteRMI);
+                    this.client_number++;
+                }
+
+
+            } catch (UnknownHostException e) {
+                try {
+                    e.printStackTrace();
+                    currentThread().join();
+                    System.out.print("JOINED");
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                e.printStackTrace();
+            } catch (IOException e) {
+                try {
+                    currentThread().join();
+                    System.out.print("JOINED");
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                e.printStackTrace();
+            } finally {
+                try {
+                    currentThread().join();
+                    System.out.print("JOINED");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (listenSocket != null) {
+                    try {
+                        System.out.print("Socket closed");
+                        listenSocket.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+
+            }
+
     }
 }
